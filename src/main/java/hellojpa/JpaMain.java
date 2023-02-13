@@ -18,10 +18,12 @@ public class JpaMain {
 
         try {
             // 회원 등록
-            // Member member = new Member();
-            // member.setId(1L);
-            // member.setName("hello");
-            // em.persist(member);
+            // 비영속
+            // Member member1 = new Member(3L, "helloA");
+            // Member member2 = new Member(4L, "helloB");
+            // 영속
+            // em.persist(member1);
+            // em.persist(member2);
 
             // 회원 수정
             // em.persist()를 사용하지 않고 객체의 값만 바꾸어도, JPA에서 객체를 관리하기 때문에, 변경사항이 있으면 자동으로 Update 처리
@@ -29,13 +31,18 @@ public class JpaMain {
             // findMember.setName("HelloJPA");
 
             // 회원 조회 (JPQL 사용)
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(0) // 페이징 시작점
-                    .setMaxResults(5) // 페이징 Max
-                    .getResultList();
-            for (Member member : result) {
-                System.out.println("member.name = " + member.getName());
-            }
+            // List<Member> result = em.createQuery("select m from Member as m", Member.class)
+            //         .setFirstResult(0) // 페이징 시작점
+            //         .setMaxResults(5) // 페이징 Max
+            //         .getResultList();
+            // for (Member member : result) {
+            //     System.out.println("member.name = " + member.getName());
+            // }
+
+            Member member = new Member();
+            member.setUsername("B");
+
+            em.persist(member);
 
             tx.commit();
         } catch (Exception e) {
