@@ -24,9 +24,9 @@ public class JpaMain {
 
             Member member = new Member();
             member.setUsername("member1");
-            team.addMember(member); // 연관관계 편의 메소드 1
+            // team.addMember(member); // 연관관계 편의 메소드 1
             // member.changeTeam(team); // 연관관계 편의 메소드 2
-            em.persist(member);
+            // em.persist(member);
 
             // 조회 (양방향 2) 에서 필요 => team에도 member 반영
             // team.getMembers().add(member);
@@ -46,11 +46,11 @@ public class JpaMain {
             // }
 
             // 조회 (양방향 2)
-            Team findTeam = em.find(Team.class, team.getId()); // 1차 캐시
-            List<Member> members = findTeam.getMembers();
-            for (Member m : members) {
-                System.out.println("m.getUsername() = " + m.getUsername());
-            }
+            // Team findTeam = em.find(Team.class, team.getId()); // 1차 캐시
+            // List<Member> members = findTeam.getMembers();
+            // for (Member m : members) {
+            //     System.out.println("m.getUsername() = " + m.getUsername());
+            // }
 
             // 회원 등록
             // 비영속
