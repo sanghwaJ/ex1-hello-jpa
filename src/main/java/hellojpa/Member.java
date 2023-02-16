@@ -22,16 +22,16 @@ public class Member {
     @Column(name = "USERNAME")
     private String username;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // team을 프록시 객체로 조회
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    @OneToOne
-    @JoinColumn(name = "LOCKER_ID")
-    private Locker locker;
+    // @OneToOne
+    // @JoinColumn(name = "LOCKER_ID")
+    // private Locker locker;
 
-    @OneToMany(mappedBy = "member")
-    private List<MemberProduct> memberProducts = new ArrayList<>();
+    // @OneToMany(mappedBy = "member")
+    // private List<MemberProduct> memberProducts = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -57,13 +57,13 @@ public class Member {
         this.team = team;
     }
 
-    public Locker getLocker() {
-        return locker;
-    }
-
-    public void setLocker(Locker locker) {
-        this.locker = locker;
-    }
+    // public Locker getLocker() {
+    //     return locker;
+    // }
+    //
+    // public void setLocker(Locker locker) {
+    //     this.locker = locker;
+    // }
 
     // 연관관계 편의 메소드 2
     // public void changeTeam(Team team) {
