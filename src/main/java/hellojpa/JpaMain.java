@@ -4,6 +4,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
 
@@ -177,22 +178,107 @@ public class JpaMain {
             /**
              * 영속성 전이 테스트
              */
-            Child child1 = new Child();
-            Child child2 = new Child();
+            // Child child1 = new Child();
+            // Child child2 = new Child();
+            //
+            // Parent parent = new Parent();
+            // parent.addChild(child1);
+            // parent.addChild(child2);
+            //
+            // // cascade = CascadeType.ALL 설정으로, parent만 persist 했지만, child1과 child2도 persist cascade
+            // em.persist(parent);
+            //
+            // em.flush();
+            // em.clear();
+            //
+            // // orphanRemoval = true 설덩으로, parent가 삭제되면 child도 삭제함
+            // Parent findParent = em.find(Parent.class, parent.getId());
+            // em.remove(findParent);
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
+            /**
+             * 값 타입과 불변객체 테스트
+             */
+            // Address address = new Address("city", "street", "10000");
+            //
+            // Member member1 = new Member();
+            // member1.setUsername("member1");
+            // member1.setHomeAddress(address);
+            // em.persist(member1);
+            //
+            // // 값 타입을 공유해서 쓰는 것이 아니라 copy해서 사용
+            // Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+            //
+            // Member member2 = new Member();
+            // member2.setUsername("member2");
+            // member2.setHomeAddress(copyAddress);
+            // em.persist(member2);
+            //
+            // // copy한 address를 사용해서, member2에는 영향(사이드이펙트)이 없음!
+            // // 하지만... 객체의 공유 참조는 피할 수 없음
+            // // member1.getHomeAddress().setCity("newCity");
 
-            // cascade = CascadeType.ALL 설정으로, parent만 persist 했지만, child1과 child2도 persist cascade
-            em.persist(parent);
+            // // 아래의 방법을 쓰자!
+            // Address address = new Address("city", "street", "10000");
+            //
+            // Member member1 = new Member();
+            // member1.setUsername("member1");
+            // member1.setHomeAddress(address);
+            // em.persist(member1);
+            //
+            // // 아예 새로운 객체
+            // Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode());
+            // member1.setHomeAddress(newAddress);
+
+            /**
+             * 값 타입 컬렉션 테스트
+             */
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(new Address("homeCity", "street", "10000"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("족발");
+
+            // member.getAddressHistory().add(new Address("old1", "street", "10000"));
+            // member.getAddressHistory().add(new Address("old2", "street", "10000"));
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            // orphanRemoval = true 설덩으로, parent가 삭제되면 child도 삭제함
-            Parent findParent = em.find(Parent.class, parent.getId());
-            em.remove(findParent);
+            System.out.println("===== START =====");
+            // 값 타입 컬렉션은 자동으로 지연 로딩 전략을 사용함
+            Member findMember = em.find(Member.class, member.getId());
+
+            // // 값 타입 컬렉션 등록
+            // List<Address> addressHistory = findMember.getAddressHistory();
+            // for (Address address : addressHistory) {
+            //     System.out.println("address.getCity() = " + address.getCity());
+            // }
+            //
+            // Set<String> favoriteFoods = findMember.getFavoriteFoods();
+            // for (String favoriteFood : favoriteFoods) {
+            //     System.out.println("favoriteFood = " + favoriteFood);
+            // }
+
+            // // homeCity => newCity
+            // Address newAddress = findMember.getHomeAddress();
+            // // 이런 경우, 완전히 새로운 인스턴스를 사용해야 함 (findMember.getHomeAddress().setCity("newCity"); 금지!!!!!)
+            // findMember.setHomeAddress(new Address("newCity", newAddress.getStreet(), newAddress.getZipcode()));
+            //
+            // // 값 타입 컬렉션 수정 (컬렉션의 값만 바꿨는데 쿼리가 나감)
+            // // 치킨 => 보쌈
+            // findMember.getFavoriteFoods().remove("치킨");
+            // findMember.getFavoriteFoods().add("한식");
+            //
+            // // 주소 바꾸기
+            // findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000"));
+            // findMember.getAddressHistory().add(new AddressEntity("new1", "street", "10000"));
 
             tx.commit();
         } catch (Exception e) {
