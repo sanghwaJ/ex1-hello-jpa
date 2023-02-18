@@ -252,7 +252,7 @@ public class JpaMain {
             em.clear();
 
             System.out.println("===== START =====");
-            // 값 타입 컬렉션은 자동으로 지연 로딩 전략을 사용함
+            // 값 타입 컬렉션은 자동으로 지연 로딩 전략을 사용
             Member findMember = em.find(Member.class, member.getId());
 
             // // 값 타입 컬렉션 등록
