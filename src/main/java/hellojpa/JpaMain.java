@@ -3,6 +3,9 @@ package hellojpa;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Set;
 
@@ -232,28 +235,28 @@ public class JpaMain {
             /**
              * 값 타입 컬렉션 테스트
              */
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setHomeAddress(new Address("homeCity", "street", "10000"));
-
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("피자");
-            member.getFavoriteFoods().add("족발");
-
-            // member.getAddressHistory().add(new Address("old1", "street", "10000"));
-            // member.getAddressHistory().add(new Address("old2", "street", "10000"));
-
-            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
-            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
-
-            em.persist(member);
-
-            em.flush();
-            em.clear();
-
-            System.out.println("===== START =====");
-            // 값 타입 컬렉션은 자동으로 지연 로딩 전략을 사용
-            Member findMember = em.find(Member.class, member.getId());
+            // Member member = new Member();
+            // member.setUsername("member1");
+            // member.setHomeAddress(new Address("homeCity", "street", "10000"));
+            //
+            // member.getFavoriteFoods().add("치킨");
+            // member.getFavoriteFoods().add("피자");
+            // member.getFavoriteFoods().add("족발");
+            //
+            // // member.getAddressHistory().add(new Address("old1", "street", "10000"));
+            // // member.getAddressHistory().add(new Address("old2", "street", "10000"));
+            //
+            // member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            // member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+            //
+            // em.persist(member);
+            //
+            // em.flush();
+            // em.clear();
+            //
+            // System.out.println("===== START =====");
+            // // 값 타입 컬렉션은 자동으로 지연 로딩 전략을 사용
+            // Member findMember = em.find(Member.class, member.getId());
 
             // // 값 타입 컬렉션 등록
             // List<Address> addressHistory = findMember.getAddressHistory();
@@ -279,6 +282,34 @@ public class JpaMain {
             // // 주소 바꾸기
             // findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000"));
             // findMember.getAddressHistory().add(new AddressEntity("new1", "street", "10000"));
+
+            /**
+             * JPQL 테스트
+             */
+            // List<Member> result = em.createQuery(
+            //         "select m from Member m where m.username like '%kim%'",
+            //         Member.class
+            // ).getResultList();
+            //
+            // for (Member member : result) {
+            //     System.out.println("member = " + member);
+            // }
+
+            /**
+             * criteria 테스트
+             */
+            // // Criteria 사용 준비
+            // CriteriaBuilder cb = em.getCriteriaBuilder();
+            // CriteriaQuery<Member> query = cb.createQuery(Member.class);
+            //
+            // // 루트 클래스 (조회를 시작할 클래스)
+            // Root<Member> m = query.from(Member.class);
+            //
+            // // 쿼리 생성
+            // // String이 아니기 때문에 오타를 빠르게 캐치할 수 있다는 장점이 있음
+            // // 하지만, 동적 쿼리 사용과 유지보수가 어려워 criteria는 실무에서 잘 쓰이지 않음 (criteria 대신 QueryDSL을 쓰자!)
+            // CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            // List<Member> resultList = em.createQuery(cq).getResultList();
 
             tx.commit();
         } catch (Exception e) {
